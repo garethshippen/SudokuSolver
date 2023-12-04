@@ -1,3 +1,10 @@
+
+debug = False
+def print_debug(message):
+    if debug:
+        print(message)    
+
+
 class Cell():
     def __init__(self, value = 0):
         self.value = value
@@ -9,11 +16,6 @@ class Cell():
     
     def __str__(self):
         return str(self.value)
-
-debug = False
-def print_debug(message):
-    if debug:
-        print(message)    
 
 class Board():
     def __init__(self, board = 0):
@@ -37,6 +39,18 @@ class Board():
                     print("| ", end="")
 #                print("{} ".format(str(self.cells[(i *9 + j)])), end = "")
                 print("{} ".format(self.cells[(i *9 + j)]), end = "")
+            print()
+            
+    def show_possibles(self):
+        print_debug("show possibles")
+        for i in range(9):
+            if i == 3 or i == 6:
+                print("------+-------+------")
+            for j in range(9):
+                if j == 3 or j == 6:
+                    print("| ", end="")
+    #                print("{} ".format(str(self.cells[(i *9 + j)])), end = "")
+                print("{} ".format(self.cells[(i *9 + j)].possibles), end = "")
             print()
 
     def enter(self, row_number = -1):
@@ -74,7 +88,16 @@ class Board():
             for cell in kernel:
                 temp.append(self.cells[cell + centre])
             self.sectors.append(temp)
-    
+    def print_structs(self):
+        for row in self.rows:
+            print([cell.value for cell in row])
+        print()
+        for col in self.columns:
+            print([cell.value for cell in col])
+        print()
+        for sect in self.sectors:
+            print([cell.value for cell in sect])
+            
     def update(self):
         print_debug("update")
         #go through these structures and remove possibilies from cells
@@ -114,7 +137,8 @@ class Board():
             cell.lock = True
             self.update()
             cell = self.find_uniques()
-        self.show()
+        #self.show()
+        self.show_possibles()
             
     def save_board(self):
         pass
@@ -123,13 +147,3 @@ class Board():
     def load_board(self):
         pass
         #create board from a string of 81 digits
-        
-    def print_structs(self):
-        for row in self.rows:
-            print([cell.value for cell in row])
-        print()
-        for col in self.columns:
-            print([cell.value for cell in col])
-        print()
-        for sect in self.sectors:
-            print([cell.value for cell in sect])
