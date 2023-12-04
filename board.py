@@ -7,6 +7,7 @@ def print_debug(message):
 
 class Cell():
     def __init__(self, value = 0):
+        print_debug("Cell.init")
         self.value = value
         self.possibles = [1,2,3,4,5,6,7,8,9]
         self.lock = False
@@ -19,7 +20,7 @@ class Cell():
 
 class Board():
     def __init__(self, board = 0):
-        print_debug("init")
+        print_debug("Board.init")
         if board == 0:
             self.cells = [Cell() for i in range(81)]
         else:
@@ -30,7 +31,7 @@ class Board():
         self.build_structs()
 
     def show(self):
-        print_debug("show")
+        print_debug("Board.show")
         for i in range(9):
             if i == 3 or i == 6:
                 print("------+-------+------")
@@ -42,7 +43,7 @@ class Board():
             print()
             
     def show_possibles(self):
-        print_debug("show possibles")
+        print_debug("Board.show possibles")
         for i in range(9):
             if i == 3 or i == 6:
                 print("------+-------+------")
@@ -54,7 +55,7 @@ class Board():
             print()
 
     def enter(self, row_number = -1):
-        print_debug("enter")
+        print_debug("Board.enter")
         #TODO Reformat this
         #TODO Check entered rows are nine digits long
         if row_number == -1:
@@ -74,7 +75,7 @@ class Board():
                 insert_index += 1
 
     def build_structs(self):
-        print_debug("build structs")
+        print_debug("Board.build structs")
         # Rows
         self.rows = [self.cells[i*9:(i+1)*9] for i in range(9)]
         # Columns
@@ -99,7 +100,7 @@ class Board():
             print([cell.value for cell in sect])
             
     def update(self):
-        print_debug("update")
+        print_debug("Board.update")
         #go through these structures and remove possibilies from cells
         for row in self.rows:
             #get found numbers
@@ -119,24 +120,12 @@ class Board():
                 cell.possibles = list(set(cell.possibles) - set(numbers))
 
     def find_uniques(self):
-        print_debug("find uniques")
+        print_debug("Board.find uniques")
         #goes through all the cells in the board. if any of them only have a single .possibles, return the cell
         for cell in self.cells:
             if cell.lock == False and len(cell.possibles) == 1:
                 return cell
         return None
-
-    def solve(self):
-        print_debug("solve")
-        self.update()
-        cell = self.find_uniques()
-        while cell:
-            cell.value = cell.possibles[0]
-            cell.lock = True
-            self.update()
-            cell = self.find_uniques()
-        self.show()
-        #self.show_possibles()
             
     def save_board(self):
         pass
@@ -145,3 +134,41 @@ class Board():
     def load_board(self):
         pass
         #create board from a string of 81 digits
+        
+        
+class Sudoku():
+    def __init__(self, input = 0):
+        print_debug("Sudoku.init")
+        self.board = Board(input)
+        self.stack = [self.board]
+        
+    def get_attempt_index(self, board):
+        print_debug("Sudoku.get attempt index")
+        length = 9
+        index = -1
+        for i in range(len(board.cells)):
+            if len(board.cells[i].possibles) < length:
+                length = len(board.cells[i].possibles)
+                index = i
+                if length == 2: # Don't waste time looking for another leng 2
+                    break
+        return index
+    
+    def copy_board(self, board):
+        print_debug("Sudoku.copy board")
+        new_board = Board()
+        for cell in self.board.cells:
+            new_board.value = cell.value
+            new_board.possibles = cell.possibles.copy() # DEBUG CHECK HERE FIRST
+            new_board.lock = cell.lock
+        return new_board
+
+    def solve(self):
+        print_debug("Sudoku.solve")
+        self.board.update()
+        cell = self.board.find_uniques()
+        while cell:
+            cell.value = cell.possibles[0]
+            cell.lock = True
+            self.update()
+            cell = self.board.find_uniques()
