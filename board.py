@@ -131,14 +131,12 @@ class Board():
         self.update()
         cell = self.find_uniques()
         while cell:
-            if cell.lock == True:
-                continue
             cell.value = cell.possibles[0]
             cell.lock = True
             self.update()
             cell = self.find_uniques()
-        #self.show()
-        self.show_possibles()
+        self.show()
+        #self.show_possibles()
             
     def save_board(self):
         pass
