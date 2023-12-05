@@ -51,7 +51,7 @@ class Board():
                 if j == 3 or j == 6:
                     print("| ", end="")
     #                print("{} ".format(str(self.cells[(i *9 + j)])), end = "")
-                print("{} ".format(self.cells[(i *9 + j)].possibles), end = "")
+                print("{} ".format(len(self.cells[(i *9 + j)].possibles)), end = "")
             print()
 
     def enter(self, row_number = -1):
