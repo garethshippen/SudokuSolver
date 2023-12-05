@@ -44,6 +44,7 @@ class Board():
             
     def show_possibles(self):
         print_debug("Board.show possibles")
+        self.update()
         for i in range(9):
             if i == 3 or i == 6:
                 print("------+-------+------")
