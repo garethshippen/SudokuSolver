@@ -15,6 +15,11 @@ class Cell():
             self.possibles = []
             self.lock = True
     
+    def set_value(self, new_value):
+        self.value = new_value
+        self.possibles = []
+        self.lock = True
+    
     def __str__(self):
         return str(self.value)
 
@@ -164,11 +169,11 @@ class Sudoku():
             new_board.lock = cell.lock
         return new_board
 
-    def dead_end(self, current_board):
+    # If the board is unfinished, and there are no possibles, this board is a dead end.
+    def dead_end(current_board):
         accum = []
         for cell in current_board:
             accum += cell.possibles
-            
         return (0 in current_board.cells and len(accum) == 0)
 
 '''
