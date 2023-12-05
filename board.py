@@ -1,9 +1,7 @@
-
 debug = False
 def print_debug(message):
     if debug:
         print(message)    
-
 
 class Cell():
     def __init__(self, value = 0):
@@ -95,6 +93,7 @@ class Board():
             for cell in kernel:
                 temp.append(self.cells[cell + centre])
             self.sectors.append(temp)
+
     def print_structs(self):
         for row in self.rows:
             print([cell.value for cell in row])
@@ -148,7 +147,8 @@ class Sudoku():
         self.board = Board(input)
         self.stack = [self.board]
         
-    def get_attempt_index(self, board):
+    # Return the index of the first len==2 possibles list, or shortest possibles list
+    def get_attempt_index(board):
         print_debug("Sudoku.get attempt index")
         length = 9
         index = -1
@@ -160,16 +160,17 @@ class Sudoku():
                     break
         return index
     
-    def copy_board(self, board):
+    def copy_board(board):
         print_debug("Sudoku.copy board")
         new_board = Board()
-        for cell in self.board.cells:
-            new_board.value = cell.value
-            new_board.possibles = cell.possibles.copy() # DEBUG CHECK HERE FIRST
-            new_board.lock = cell.lock
+        for i, cell in enumerate(board.cells):
+            new_board.cells[i].value = cell.value
+            new_board.cells[i].possibles = cell.possibles.copy() # DEBUG CHECK HERE FIRST
+            new_board.cells[i].lock = cell.lock
         return new_board
 
     # If the board is unfinished, and there are no possibles, this board is a dead end.
+    # True = deadend. False = live
     def dead_end(current_board):
         accum = []
         for cell in current_board:
