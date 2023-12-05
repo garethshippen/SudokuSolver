@@ -32,6 +32,7 @@ class Board():
         self.columns = []
         self.sectors = []
         self.build_structs()
+        self.state = ""
 
     def show(self):
         print_debug("Board.show")
@@ -104,6 +105,8 @@ class Board():
         for sect in self.sectors:
             print([cell.value for cell in sect])
             
+    # Go through structures
+    # Remove possibles that have values in the struct it is in
     def update(self):
         print_debug("Board.update")
         #go through these structures and remove possibilies from cells
@@ -124,6 +127,9 @@ class Board():
             for cell in sector:
                 cell.possibles = list(set(cell.possibles) - set(numbers))
 
+        self.state = "".join([str(cell.value) for cell in self.cells])
+
+    # Returns the first unsolved cell with one possible. Or none.
     def find_uniques(self):
         print_debug("Board.find uniques")
         #goes through all the cells in the board. if any of them only have a single .possibles, return the cell
@@ -131,21 +137,19 @@ class Board():
             if cell.lock == False and len(cell.possibles) == 1:
                 return cell
         return None
-            
-    def save_board(self):
-        pass
-        #save the board state as a string of 81 digits
 
-    def load_board(self):
-        pass
-        #create board from a string of 81 digits
-        
+    # Returns boolean whether the board is solved.
+    def is_solved(self):
+        if "0" not in self.state:
+            return True
+        else:
+            return False 
         
 class Sudoku():
     def __init__(self, input = 0):
         print_debug("Sudoku.init")
         self.board = Board(input)
-        self.stack = [self.board]
+        self.queue = [self.board]
         
     # Return the index of the first len==2 possibles list, or shortest possibles list
     def get_attempt_index(board):
@@ -160,6 +164,7 @@ class Sudoku():
                     break
         return index
     
+    # Returns a copy of a board with new cell objects
     def copy_board(board):
         print_debug("Sudoku.copy board")
         new_board = Board()
@@ -177,12 +182,38 @@ class Sudoku():
             accum += cell.possibles
         return (0 in current_board.cells and len(accum) == 0)
 
+    def solve(self, current_board): # need to call with self.queue.pop(0)
+        current_board.update()
+        unique = current_board.find_uniques()
+        while unique:
+            unique.set_value(unique.possibles[0])
+            current_board.update()
+            unique = current_board.find_uniques()
+        # Only branching boards and unsolvales past here
+        if current_board.is_solved():
+            return current_board
+        elif not Sudoku.dead_end(current_board):
+            pass
+            ## Branch
+            # Get the cell with the least possibles
+            try_index = Sudoku.get_attempt_index(current_board)
+            # Make a copy of the board
+            next_board = Sudoku.copy_board(current_board)
+            # In one copy pop a value from the possibles and push the board to the queue
+            next_value = current_board.cells[try_index].possibles.pop()
+            self.queue.append(current_board)
+            # In the other copy set the cell's value to the popped value
+            next_board.cells[try_index].set_value(next_value)
+            # Call solve on that board?
+            what_do_with_this = self.solve(next_board)
+        else:
+            ## Not solved, and a dead end
+            return None
+            
 '''
     def solve(self, current_board):
         print_debug("Sudoku.solve")
         run = False
-        for cell in current_board.cells:
-            if cell.value = 
         while run:
             for cell in current_board.cells:
                 if len(cell.possibles) > 0:
