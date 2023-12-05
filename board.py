@@ -163,12 +163,36 @@ class Sudoku():
             new_board.lock = cell.lock
         return new_board
 
-    def solve(self):
+    def dead_end(self, current_board):
+        accum = []
+        for cell in current_board:
+            accum += cell.possibles
+            
+        return (0 in current_board.cells and len(accum) == 0)
+
+'''
+    def solve(self, current_board):
         print_debug("Sudoku.solve")
-        self.board.update()
-        cell = self.board.find_uniques()
-        while cell:
-            cell.value = cell.possibles[0]
-            cell.lock = True
-            self.update()
-            cell = self.board.find_uniques()
+        run = False
+        for cell in current_board.cells:
+            if cell.value = 
+        while run:
+            for cell in current_board.cells:
+                if len(cell.possibles) > 0:
+                    run = True
+                else:
+                    run = False
+                break
+            
+            current_board.update()
+            cell = current_board.find_uniques()
+            if cell: # There is a cell with only one possible 
+                cell.value = cell.possibles[0]
+                cell.lock = True
+            else: # All cells are filled or have multiple possibles
+                pass
+                # Find the first cell with the least possibles
+                # Pop one of these possibles and push the board to the stack
+                # Use the popped possible as the value for the cell
+                # Call solve on this board?
+'''
